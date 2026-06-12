@@ -1,0 +1,255 @@
+#compdef caelestia
+
+local context state state_descr line
+typeset -A opt_args
+
+_caelestia() {
+    _arguments -C \
+        '1: :_caelestia_commands' \
+        '*:: :->args'
+
+    case $state in
+        (args)
+            case $words[1] in
+                (shell)
+                    _arguments -C \
+                        '(-d --daemon)'{-d,--daemon}'[Start the shell detached]' \
+                        '(-s --show)'{-s,--show}'[Print all IPC commands]' \
+                        '(-l --log)'{-l,--log}'[Print the shell log]' \
+                        '--log-rules[Log rules to apply]' \
+                        '1: :_caelestia_shell_commands' \
+                        '*:: :->shell_args'
+                    ;;
+                (toggle)
+                    _arguments -C \
+                        '1: :_caelestia_toggle_commands'
+                    ;;
+                (scheme)
+                     _arguments -C \
+                        '1: :_caelestia_scheme_commands' \
+                        '*:: :->scheme_args'
+                    ;;
+                (screenshot)
+                     _arguments -C \
+                        '(-r --region)'{-r,--region}'[Capture region]' \
+                        '(-f --freeze)'{-f,--freeze}'[Freeze while selecting region]'
+                    ;;
+                (record)
+                     _arguments -C \
+                        '(-r --region)'{-r,--region}'[Capture region]' \
+                        '(-s --sound)'{-s,--sound}'[Capture sound]' \
+                        '(-c --clipboard)'{-c,--clipboard}'[Copy recording path to clipboard]'
+                    ;;
+                (clipboard)
+                     _arguments -C \
+                        '(-d --delete)'{-d,--delete}'[Delete from clipboard history]'
+                    ;;
+                (emoji)
+                     _arguments -C \
+                        '(-p --picker)'{-p,--picker}'[Open emoji/glyph picker]' \
+                        '(-f --fetch)'{-f,--fetch}'[Fetch emoji/glyph data from remote]'
+                    ;;
+                (wallpaper)
+                     _arguments -C \
+                        '(-p --print)'{-p,--print}'[Print the scheme for a wallpaper]' \
+                        '(-r --random)'{-r,--random}'[Switch to a random wallpaper]' \
+                        '(-f --file)'{-f,--file}'[The file to switch to]:file:_files' \
+                        '(-n --no-filter)'{-n,--no-filter}'[Do not filter by size]' \
+                        '(-t --threshold)'{-t,--threshold}'[The threshold to filter by]:threshold' \
+                        '(-N --no-smart)'{-N,--no-smart}'[Disable smart mode switching]' \
+                        '1: :_caelestia_wallpaper_commands'
+                    ;;
+                (resizer)
+                     _arguments -C \
+                        '(-d --daemon)'{-d,--daemon}'[Start in daemon mode]' \
+                        '1: :_caelestia_resizer_commands'
+                    ;;
+            esac
+            ;;
+    esac
+
+    case $state in
+        (shell_args)
+            case $words[1] in
+                (mpris)
+                    _arguments -C '1: :_caelestia_shell_mpris_commands' '*:: :->mpris_args'
+                    ;;
+                (drawers)
+                    _arguments -C '1: :_caelestia_shell_drawers_commands' '*:: :->drawers_args'
+                    ;;
+                (wallpaper)
+                    _arguments -C '1: :_caelestia_shell_wallpaper_commands'
+                    ;;
+                (notifs)
+                    _arguments -C '1: :_caelestia_shell_notifs_commands'
+                    ;;
+            esac
+            ;;
+        (scheme_args)
+            case $words[1] in
+                (list)
+                    _arguments -C \
+                        '(-n --names)'{-n,--names}'[List scheme names]' \
+                        '(-f --flavours)'{-f,--flavours}'[List scheme flavours]' \
+                        '(-m --modes)'{-m,--modes}'[List scheme modes]' \
+                        '(-v --variants)'{-v,--variants}'[List scheme variants]'
+                    ;;
+                (get)
+                    _arguments -C \
+                        '(-n --name)'{-n,--name}'[Get scheme name]' \
+                        '(-f --flavour)'{-f,--flavour}'[Get scheme flavour]' \
+                        '(-m --mode)'{-m,--mode}'[Get scheme mode]' \
+                        '(-v --variant)'{-v,--variant}'[Get scheme variant]'
+                    ;;
+                (set)
+                    _arguments -C \
+                        '--notify[Send a notification on error]' \
+                        '(-r --random)'{-r,--random}'[Switch to a random scheme]' \
+                        '(-n --name)'{-n,--name}'[Set scheme name]:name: ' \
+                        '(-f --flavour)'{-f,--flavour}'[Set scheme flavour]:flavour: ' \
+                        '(-m --mode)'{-m,--mode}'[Set scheme mode]:mode: ' \
+                        '(-v --variant)'{-v,--variant}'[Set scheme variant]:variant: '
+                    ;;
+            esac
+            ;;
+        (mpris_args)
+             case $words[1] in
+                (getActive)
+                     _arguments -C '1: :_caelestia_shell_mpris_getactive_commands'
+                     ;;
+             esac
+             ;;
+        (drawers_args)
+             case $words[1] in
+                (toggle)
+                    # dynamic completion for drawers toggle could go here
+                    ;;
+             esac
+             ;;
+    esac
+}
+
+_caelestia_commands() {
+    local -a commands
+    commands=(
+        'shell:Start the shell or message it'
+        'toggle:Toggle a special workspace'
+        'scheme:Manage the colour scheme'
+        'screenshot:Take a screenshot'
+        'record:Start a screen recording'
+        'clipboard:Open clipboard history'
+        'emoji:Emoji/glyph utilities'
+        'wallpaper:Manage the wallpaper'
+        'resizer:Window resizer'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_shell_commands() {
+     local -a commands
+    commands=(
+        'mpris:Mpris control'
+        'drawers:Toggle drawers'
+        'wallpaper:Wallpaper control (for internal use)'
+        'notifs:Notification control'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_toggle_commands() {
+     local -a commands
+    commands=(
+        'communication:Toggle communication workspace'
+        'music:Toggle music workspace'
+        'specialws:Toggle special workspace'
+        'sysmon:Toggle sysmon workspace'
+        'todo:Toggle todo workspace'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_scheme_commands() {
+     local -a commands
+    commands=(
+        'list:List available schemes'
+        'get:Get scheme properties'
+        'set:Set the current scheme'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_resizer_commands() {
+     local -a commands
+    commands=(
+        'pip:Quick pip mode'
+        'active:Select the active window'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_shell_mpris_commands() {
+    local -a commands
+    commands=(
+        'play:Play media'
+        'pause:Pause media'
+        'playPause:Play/pause media'
+        'next:Skip to next song'
+        'previous:Go to previous song'
+        'stop:Stop media'
+        'list:List media players'
+        'getActive:Get a property from the active MPRIS player'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_shell_mpris_getactive_commands() {
+    local -a commands
+    commands=(
+        'trackTitle:Track title'
+        'trackArtist:Track artist'
+        'trackAlbum:Track album'
+        'position:Track position'
+        'length:Track length'
+        'identity:Player identity'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_shell_drawers_commands() {
+    local -a commands
+    commands=(
+        'list:List togglable drawers'
+        'toggle:Toggle a drawer'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_shell_wallpaper_commands() {
+    local -a commands
+    commands=(
+        'list:List wallpapers'
+        'get:Get current wallpaper path'
+        'set:Change wallpaper'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_shell_notifs_commands() {
+    local -a commands
+    commands=(
+        'clear:Clear popup notifications'
+    )
+    _describe 'command' commands
+}
+
+_caelestia_wallpaper_commands() {
+    local -a commands
+    commands=(
+        'list:List wallpapers'
+        'get:Get current wallpaper path'
+        'set:Change wallpaper'
+    )
+    _describe 'command' commands
+}
+
+_caelestia

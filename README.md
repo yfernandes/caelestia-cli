@@ -81,16 +81,11 @@ yay -S libnotify swappy grim dart-sass app2unit wl-clipboard slurp gpu-screen-re
 ```
 
 Now, clone the repo, `cd` into it, build the wheel via `python -m build --wheel`
-and install it via `python -m installer dist/*.whl`. Then, to install the `fish`
-completions, copy the `completions/caelestia.fish` file to
-`/usr/share/fish/vendor_completions.d/caelestia.fish`.
+and install it via `python -m installer dist/*.whl`. Then, to install the `zsh`
+completions, copy the `completions/_caelestia` file to a directory in your `$fpath`, for example:
 
 ```sh
-git clone https://github.com/caelestia-dots/cli.git
-cd cli
-python -m build --wheel
-sudo python -m installer dist/*.whl
-sudo cp completions/caelestia.fish /usr/share/fish/vendor_completions.d/caelestia.fish
+sudo cp completions/_caelestia /usr/share/zsh/site-functions/_caelestia
 ```
 
 ### Additional steps
@@ -245,7 +240,7 @@ All configuration options are in `~/.config/caelestia/cli.json`.
             "btop": {
                 "enable": true,
                 "match": [{ "class": "btop", "title": "btop", "workspace": { "name": "special:sysmon" } }],
-                "command": ["foot", "-a", "btop", "-T", "btop", "fish", "-C", "exec btop"]
+                "command": ["ghostty", "--class=btop", "--title=btop", "-e", "btop"]
             }
         },
         "todo": {

@@ -45,10 +45,36 @@ def is_lua_config() -> bool:
 
 
 DISPATCHER_MAP_LUA = {
-    "togglespecialworkspace": lambda *a: f'hl.dsp.workspace.toggle_special("{a[0]}")' if a else 'hl.dsp.workspace.toggle_special()',
+    "workspace": lambda *a: (
+        f'hl.dsp.focus({{ workspace = {a[0]} }})' if a and a[0].lstrip("+-~").isdigit()
+        else f'hl.dsp.focus({{ workspace = "{a[0]}" }})' if a
+        else 'hl.dsp.focus({ workspace = 1 })'
+    ),
+    "togglespecialworkspace": lambda *a: f'hl.dsp.workspace.toggle_special("{a[0]}")' if a and a[0] != "special" else 'hl.dsp.workspace.toggle_special()',
+    "movetoworkspace": lambda *a: (
+        f'hl.dsp.window.move({{ workspace = "{a[0].split(",")[0]}", window = "{a[0].split(",")[1]}" }})'
+        if a and "," in a[0]
+        else f'hl.dsp.window.move({{ workspace = "{a[0]}" }})' if a
+        else 'hl.dsp.window.move({ workspace = 1 })'
+    ),
     "movetoworkspacesilent": lambda *a: (
-    f'hl.dsp.window.move({{window = "address:{a[0].split(",")[1].replace("address:", "")}", workspace = "{a[0].split(",")[0]}", follow = false}})'
-),
+        f'hl.dsp.window.move({{ workspace = "{a[0].split(",")[0]}", window = "{a[0].split(",")[1]}", follow = false }})'
+        if a and "," in a[0]
+        else f'hl.dsp.window.move({{ workspace = "{a[0]}", follow = false }})' if a
+        else 'hl.dsp.window.move({ workspace = 1, follow = false })'
+    ),
+    "togglefloating": lambda *a: (
+        f'hl.dsp.window.float({{ action = "toggle", window = "{a[0]}" }})' if a
+        else 'hl.dsp.window.float({ action = "toggle" })'
+    ),
+    "pin": lambda *a: (
+        f'hl.dsp.window.pin({{ window = "{a[0]}" }})' if a
+        else 'hl.dsp.window.pin()'
+    ),
+    "killwindow": lambda *a: (
+        f'hl.dsp.window.close({{ window = "{a[0]}" }})' if a
+        else 'hl.dsp.window.close()'
+    ),
     "exec": lambda *a: 'hl.dsp.exec_cmd("' + ' '.join(a).replace('\\', '\\\\').replace('"', '\\"') + '")',
 }
 
